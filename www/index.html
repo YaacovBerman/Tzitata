@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ציטטה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=16">
+    <link rel="icon" type="image/png" href="icon_tzitata.png">
+    <link rel="apple-touch-icon" href="icon.png">
+</head>
+
+<body>
+
+    <div class="main-container">
+        <!-- מסך המפה (הראשי) -->
+        <div id="map-view">
+            <div class="header">
+                <h1>מפת השלבים</h1>
+                <div class="header-stats">🏆 <span id="total-stars">0</span></div>
+            </div>
+            <div id="map-message"
+                style="text-align: center; margin-bottom: 10px; font-weight: bold; color: var(--text-muted);"></div>
+            <div id="levels-path">
+                <!-- השלבים ייווצרו כאן דינמית -->
+            </div>
+        </div>
+
+        <!-- מסך המשחק -->
+        <div id="game-view" class="hidden">
+            <div class="header">
+                <button class="icon-btn" onclick="backToMap()" title="חזרה למפה">🏠</button>
+                <h1 style="font-size: 1.5rem;">שלב <span id="current-level-num">1</span></h1>
+                <button class="icon-btn" onclick="toggleModal(true)" title="איך משחקים?">❓</button>
+            </div>
+
+            <div id="game-scroll-area">
+                <div id="dashboard">
+                    <div class="dashboard-group">
+                        <button id="hint-btn" class="btn-hint" onclick="giveHint()">💡 רמז <span
+                                id="hints-count">(3)</span></button>
+                    </div>
+
+                    <div class="dashboard-group">
+                        <div id="strikes-box" class="stat-box" title="פסילות">❤️ <span id="strikes-display"
+                                style="margin-right: 8px; direction: ltr;">0 / 3</span></div>
+                    </div>
+                </div>
+
+                <div id="message"></div>
+
+                <div id="game-board-wrapper">
+                    <div id="game-board"></div>
+                </div>
+
+                <div id="info-bar">
+                    <span id="author-name">טוען ציטוט...</span>
+                    <span id="difficulty"></span>
+                </div>
+
+                <!-- כפתור השלב הבא (מופיע רק בניצחון) -->
+                <button id="next-level-btn" class="btn-new hidden"
+                    style="width:100%; margin-top:10px; margin-bottom: 20px;" onclick="nextLevel()">השלב הבא</button>
+            </div>
+
+            <!-- מקלדת וירטואלית -->
+            <div id="virtual-keyboard"></div>
+        </div>
+    </div>
+
+    <div id="how-to-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleModal(false)">&times;</span>
+            <div id="tutorial-step-1" class="tutorial-step">
+                <p>ברוכים הבאים ל<b>ציטטה</b>!</p>
+                <p>לפניכם ציטוט מפורסם שהוצפן. כל אות הוחלפה במספר.</p>
+                <p>המטרה: לגלות את האותיות ולחשוף את הציטוט המלא.</p>
+            </div>
+
+            <div id="tutorial-step-2" class="tutorial-step hidden">
+                <p><b>איך משחקים?</b></p>
+                <p>לוחצים על משבצת ומקלידים אות.</p>
+                <p>אם צדקתם - האות תופיע מיד.</p>
+                <p>נתקעתם? השתמשו ברמז כדי לחשוף אות.</p>
+                <p>סיימתם שלב? כל הכבוד! קיבלתם רמז נוסף למאגר</p>
+            </div>
+
+            <div id="tutorial-step-3" class="tutorial-step hidden">
+                <p><b>טעיתם?</b></p>
+                <p>איבדתם לב אחד</p>
+                <p>זה היה הלב האחרון? נפסלתם בשלב</p>
+                
+            </div>
+
+            <div id="tutorial-step-4" class="tutorial-step hidden">
+                <p><b>נפסלתם?</b></p>
+                <p>נגמרו הלבבות? אל דאגה.</p>
+                <p>ניתן לקנות לב אחד במחיר רמז מהבנק.</p>
+                <p>נגמרו הרמזים? ניתן להמשיך, אך לא תקבלו רמז על ניצחון.</p>
+                <p>נפסלתם שוב? ניתן להתחיל מחדש את השלב או להמשיך אותו במצב ללא פסילות</p>
+            </div>
+
+            <div class="tutorial-nav"
+                style="margin-top: 20px; display: flex; justify-content: space-between; gap: 10px;">
+                <button id="tut-prev-btn" class="btn-new" style="background-color: var(--text-muted); flex: 1;"
+                    onclick="changeTutorialStep(-1)">הקודם</button>
+                <button id="tut-next-btn" class="btn-new" style="flex: 1;" onclick="changeTutorialStep(1)">הבא</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="win-modal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <h2>כל הכבוד! 🎉</h2>
+            <p id="win-quote"
+                style="font-size: 1.3rem; font-weight: bold; margin: 20px 0; line-height: 1.4; padding: 0 10px; unicode-bidi: plaintext;">
+            </p>
+            <p id="win-author" style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 30px;"></p>
+            <button class="btn-new" style="width: 100%; padding: 12px; font-size: 1.1rem;" onclick="nextLevel()">השלב
+                הבא</button>
+        </div>
+    </div>
+
+    <div id="super-win-modal" class="modal">
+        <div class="modal-content" style="text-align: center; background: #fff8e1; border: 2px solid #ffd54f;">
+            <h2 style="color: #f57c00;">🏆 סיימת את הלוח! 🏆</h2>
+            <p style="font-size: 1.1rem;">השלמת את הציטוט המיוחד:</p>
+            <p id="super-win-quote"
+                style="font-size: 1.4rem; font-weight: 800; margin: 20px 0; line-height: 1.4; color: #5d4037;"></p>
+            <p id="super-win-author"
+                style="font-size: 1.2rem; color: #8d6e63; margin-bottom: 30px; font-style: italic;"></p>
+            <button class="btn-new" style="width: 100%; padding: 12px; font-size: 1.1rem; background: #f57c00;"
+                onclick="nextSuperLevel()">המשך ללוח הבא</button>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content" style="text-align: center; border: 2px solid var(--error-border);">
+            <h2 style="color: var(--error-text);">לא נורא! מה עכשיו?</h2>
+            <div id="revive-options" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <button id="revive-btn" class="btn-new" style="background-color: var(--hint-bg);"
+                    onclick="reviveGame()">המשך מאותה נקודה תמורת 💡</button>
+
+                <button id="restart-btn" class="btn-new" style="background-color: var(--text-muted);"
+                    onclick="restartLevel()">נסה שוב</button>
+
+                <button id="practice-btn" class="btn-new" style="background-color: #90a4ae; display: none;"
+                    onclick="startPracticeMode()">המשך במצב ללא הגבלת פסילות</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=16"></script>
+</body>
+
+</html>
