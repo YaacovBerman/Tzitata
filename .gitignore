@@ -1,0 +1,22 @@
+# Node
+node_modules/
+
+# Build outputs
+dist/
+www/
+build/
+.out/
+
+# Capacitor / Android / iOS specific
+android/app/build/
+android/.idea/
+android/.gradle/
+android/local.properties
+ios/App/public/
+ios/App/App/public/
+ios/App/Pods/
+ios/App/Podfile.lock
+
+# OS Files
+.DS_Store
+Thumbs.db
