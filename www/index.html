@@ -8,7 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=16">
     <link rel="icon" type="image/png" href="icon_tzitata.png">
-    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="assets/icon.png">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker failed', err));
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -90,7 +102,7 @@
                 <p><b>טעיתם?</b></p>
                 <p>איבדתם לב אחד</p>
                 <p>זה היה הלב האחרון? נפסלתם בשלב</p>
-                
+
             </div>
 
             <div id="tutorial-step-4" class="tutorial-step hidden">
